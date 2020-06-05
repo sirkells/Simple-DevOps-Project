@@ -20,7 +20,7 @@ Ansible is an open-source automation platform. It is very, very simple to set up
    ansible --version
    ```
    
-1. Create a user called ansadmin (on Control node and Managed host)  
+1. Create a user called ansadmin (on Control node and Target Server)  
    ```sh
    useradd ansadmin
    passwd ansadmin
@@ -29,15 +29,27 @@ Ansible is an open-source automation platform. It is very, very simple to set up
    ```sh
    echo "ansadmin ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
    ```
-   
 1. Log in as a ansadmin user on master and generate ssh key (on Control node)
    ```sh 
    sudo su - ansadmin
    ssh-keygen
    ```
+
 1. Copy keys onto all ansible managed hosts (on Control node)
    ```sh 
    ssh-copy-id ansadmin@<target-server>
+   ```
+1. Change sshd_config permission
+   ```sh 
+   nano /etc/ssh/sshd_config
+   
+   change under EC2 uses keys for remote access 
+   PasswordAuthentication yes
+   
+   save
+   
+   run service sshd reload
+
    ```
 
 1. Ansible server used to create images and store on docker registry. Hence install docker, start docker services and add ansadmin to the docker group. 
@@ -52,7 +64,7 @@ Ansible is an open-source automation platform. It is very, very simple to set up
    usermod -aG docker ansadmin
 
    ```
-1. Create a directory /etc/ansible and create an inventory file called "hosts" add control node and managed hosts IP addresses to it. 
+1. Create a directory /etc/ansible and create an inventory file called "hosts" add control node (locahost) and managed hosts IP addresses to it. 
  
 ### Validation test
 
